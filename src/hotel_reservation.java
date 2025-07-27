@@ -4,6 +4,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.*;
 public class hotel_reservation {
 	//here we should first declare the url , username and passward for the sql connection
 	private static final String url = "jdbc:mysql://localhost:3306/hotel_db";
@@ -23,8 +24,9 @@ public class hotel_reservation {
 		
 		try {
 			Connection connection = DriverManager.getConnection(url,username,passward);
-			
-			while(true) {
+			boolean run = true;
+			while(run) {
+				System.out.println("----------*------------*------------*-----------");
 				System.out.println("!!HOTEL RESERVATION SYSTEM!!");
 				Scanner scanner = new Scanner(System.in);
 				System.out.println("1. Reserve a new guest ");
@@ -32,8 +34,10 @@ public class hotel_reservation {
 				System.out.println("3. Delete any Guest");
 				System.out.println("4. Update Guest Info");
 				System.out.println("5. Exit");
+				System.out.println("----------*------------*------------*-----------");
 				System.out.println("Enter your choice!!: ");
 				int choice = scanner.nextInt();
+				System.out.println();
 				switch(choice) {
 					case 1:
 						reserveRoom(connection, scanner);
@@ -43,9 +47,6 @@ public class hotel_reservation {
 						viewreservation(connection);
 						break;
 						
-					case 5:
-//						exit();
-						scanner.close();
 						
 					case 3:
 						DeleteGuest(connection, scanner );
@@ -55,6 +56,12 @@ public class hotel_reservation {
 						UpdateGuest(connection, scanner);
 						break;
 						
+					case 5:
+						exit();
+						scanner.close();
+						run = false;
+						break;	
+						
 					default:
 						System.out.println("Invalid Choice, Try Again Later!!");
 						
@@ -63,6 +70,8 @@ public class hotel_reservation {
 		}
 		catch(SQLException e) {
 			System.out.println(e.getMessage());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 	public static void reserveRoom(Connection connection, Scanner scanner) throws SQLException{
@@ -151,7 +160,11 @@ public class hotel_reservation {
 		int room = scanner.nextInt();
 		
 		String sql = "UPDATE reservations SET "
-				+ "guest_name = "+ name + ",room_number = " + room + ",contact_numer = " + contact +"WHERE reservation_id = " + id + ";";
+			    + "guest_name = '" + name + "', "
+			    + "room_number = " + room + ", "
+			    + "contact_number = '" + contact + "' "
+			    + "WHERE reservation_id = " + id + ";";
+
 		
 		try(Statement smst = connection.createStatement()){
 			int rowaffected = smst.executeUpdate(sql);
@@ -163,6 +176,16 @@ public class hotel_reservation {
 		catch(SQLException e) {
 			System.out.println(e.getMessage());
 		}
+	}
+	public static void exit() throws InterruptedException {
+		System.out.print("Exiting the system!!");
+		int i = 5;	
+		while(i != 0) {
+			System.out.print(". ");
+			Thread.sleep(450);
+			i--;
+		}
+		System.out.println("Thankyou for visiting Hotel Reservation Syatem!!");
 	}
 	
 }
